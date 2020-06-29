@@ -501,7 +501,7 @@ right num (&gt;) values you can select:    3 7 15 ...
 16&lt;  10000
 17   10001
 18   10010</code></pre>
-<p>If you did ranges like 2-3 or 4-7 or 8-15, you'd get an equal amount of 1s and 0s. But what if you did 2-7? Now things have changed. You can run some statistics on this to see how often 1 shows up over 0.</p>
+<p>If you did ranges like 2-3 or 4-7 or 8-15, you'd get an equal amount of 1s and 0s. But what if you did 2-7? Now the values are of different bit lengths. You can run some statistics on this to see how often 1 shows up over 0.</p>
 <pre><code class="py language-py">from Crypto.Random.random import randint
 
 arr = [0] * 301
@@ -745,8 +745,6 @@ queen 7D</code></pre>
 			    <a href="https://github.com/redpwn/redpwnctf-2020-challenges/blob/master/rev/wintendo-nii/bin/nii">nii</a></p>
 			  </blockquote>
 			  <p>
-			  <p>Didn't get first like I did in maze but got second:</p>
-			  <img src="https://user-images.githubusercontent.com/12544505/85961889-30d71100-b973-11ea-95dd-0797365e716d.png" />
 			  <p>Solution:
 			  <code>4E494976302E313A54776C7450726E63ABFC334DEB104831C05F4831F64831D24883C03B0F05E8EBFFFFFF2F62696E2F2F7368</code></p>
 			  <p>We put in a hex string that contains headers, a checksum for the shellcode, and then some shellcode to get shell.</p>
@@ -755,6 +753,7 @@ queen 7D</code></pre>
 TwltPrnc //any of the values in the if statements
 «ü3M     //checksum
 ë.H1À_H1öH1ÒHƒÀ;..èëÿÿÿ/bin//sh //shellcode</code></pre>
+              <p>(As for where the shellcode came from, I have no idea. Normally I would suggest <a href="http://shell-storm.org/shellcode/">shell-storm</a>.)</p>
 			  <p>For the checksum, you can generate that by just running the code with the wrong checksum, peeking at the compare function, then replacing it with the correct checksum.</p>
 			  <img src="https://user-images.githubusercontent.com/12544505/85961829-b1494200-b972-11ea-9a8b-b89a4cb6a1b5.png" />
 			  <p>Decompiled code:</p>
