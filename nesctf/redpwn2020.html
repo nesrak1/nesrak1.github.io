@@ -171,7 +171,7 @@ with open("cipher.txt") as file:
 			    <a href="https://github.com/redpwn/redpwnctf-2020-challenges/blob/master/crypto/pseudo-key/pseudo-key-output.txt">pseudo-key-output.txt</a>
 			    <a href="https://github.com/redpwn/redpwnctf-2020-challenges/blob/master/crypto/pseudo-key/pseudo-key.py">pseudo-key.py</a></p>
 			  </blockquote>
-			  <p>A message is encrypted with a key by adding the values of the message and key together and modding by 26. However, the key is  encrypted with itself. Since the encryption method is on a per character basis, it doesn't matter what we don't have to do anything weird with the overall message.</p>
+			  <p>A message is encrypted with a key by adding the values of the message and key together and modding by 26. However, the key is encrypted with itself. Since the encryption method is on a per character basis, it doesn't matter what we don't have to do anything weird with the overall message.</p>
 			  <pre><code class="js language-js">var alp = "abcdefghijklmnopqrstuvwxyz";
 
 function sukeydec(key) {
@@ -255,7 +255,7 @@ f s </code></pre>
 			    <p>Site: static-pastebin.2020.redpwnc.tf</p>
 			    <p>Note: The site is entirely static. Dirbuster will not be useful in solving it.</p>
 			  </blockquote>
-			  <p>The page has a textbox and anything you type will be turned into base64 and put in the url. However, the js on the page removes anything in &lt;&gt;s. However, the code works by adding one to a variable for &lt; and subtracting one with a &gt;. So you can start with &gt;&lt; which makes the value equal to one, and you can type stuff in. I used the following:</p>
+			  <p>The page has a textbox and anything you type will be turned into base64 and put in the url. However, the js on the page removes anything in &lt;&gt;s. The code works by adding one to a variable for &lt; and subtracting one with a &gt;. So you can start with &gt;&lt; which makes the value equal to one, and you can type stuff into html tags. I used the following:</p>
 			  <pre><code class="html language-html">&gt;&lt;img src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png" onload="alert('hi');"/&gt;</code></pre>
 			  <p>The whole point of this challenge is to find the flag and we have a bot that let's us go to the page. So we need to execute some js on the bot's computer to gain a flag. There's only a few places that stuff like that can be stored such as local storage or cookies. In this case it ended up being cookies.</p>
 			  <pre><code class="html language-html">&gt;&lt;img src="https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png" onload="alert(document.cookie);"/&gt;</code></pre>
