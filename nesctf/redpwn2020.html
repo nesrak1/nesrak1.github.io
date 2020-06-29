@@ -758,7 +758,7 @@ TwltPrnc //any of the values in the if statements
 			  <p>For the checksum, you can generate that by just running the code with the wrong checksum, peeking at the compare function, then replacing it with the correct checksum.</p>
 			  <img src="https://user-images.githubusercontent.com/12544505/85961829-b1494200-b972-11ea-9a8b-b89a4cb6a1b5.png" />
 			  <p>Decompiled code:</p>
-			  <pre><code class="c language-c">long qword_0 = 0x03010102464C457F;
+			  <pre><code class="c language-c">long qword_0 = 0x03010102464c457f;
 
 char buf[] = {
     0xe4, 0xba, 0x8c, 0xe3, 0x80, 0x87, 0xe4, 0xba,
@@ -1014,7 +1014,7 @@ static long CalcJump(long pos, int dir)
 			  <p>Arm fun instead of x86/_64. IDA free doesn't support ARM debugging, Cutter sucks at debugging, and gdb is kind of annoying. So we'll use radare2 (the stuff that runs Cutter). It has a cui for debugging stuff. Also, we'll need multiarch qemu to debug the arm app.</p>
 			  <p>To start the program: <code>qemu-arm -singlestep -g 1230</code></p>
 			  <p>To connect r2 to the program: <code>r2 -a arm -d gdb://localhost:1230</code></p>
-			  <p>Once connected, type <code>V!</code> to open the debugging mode. Press w to go into windowed mode so you can resize windows. Arrow keys selects a window and shift+arrow resizes it from the right edge. Once you've resized the main assembly window, press <code>q</code> to go back and use the right arrow to fill the assembly screen.</p>
+			  <p>Once connected, type <code>V!</code> to open the debugging mode. Press w to go into windowed mode so you can resize windows. Arrow keys selects a window and shift+arrow resizes it from the edge of your arrow key. Once you've resized the main assembly window, press <code>q</code> to go back and use the right arrow to fill the assembly screen.</p>
 			  <img src="https://user-images.githubusercontent.com/12544505/85961874-f8cfce00-b972-11ea-8a0c-423b82cb71aa.png" />
 			  <p>Debugging keys:</p>
 			  <pre><code>  F2      toggle breakpoint
