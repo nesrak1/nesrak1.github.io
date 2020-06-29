@@ -897,7 +897,7 @@ Tab: Teleport to cursor (good for miku game!!!!!)</code></pre>
 			  <img src="https://user-images.githubusercontent.com/12544505/85961880-1d2baa80-b973-11ea-996c-e4ea2fc8ff0c.png" />
 			  <p>A maze in assembly. Each direction you go changes the address in the program. You have to get to <code>mov eax, 1</code> (return true).</p>
 			  <p>To find the return true code, simply export the asm and grep for <code>mov eax, 1</code>. Some people used rop tools which I suppose you could do as well.</p>
-			  <p>For some reason I started at the end and went backwards but it doesn't really matter.</p>
+			  <p>For some reason I started at the end and went backwards but it doesn't really matter. My solution was to go to the end, find all possible locations that could jump to that address, and go there and repeat the process. If the instruction wasn't `lea rax, ...` then it gave up in that area.</p>
 			  <pre><code class="cs language-cs">const ushort leaRax = 0x8D48; //aka valid path
 const int exitLen = 0x57; //distance from jump location back to start of block
 static BinaryReader br;
