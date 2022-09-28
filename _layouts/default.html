@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>{% if page.description %}{{ page.description }}{% endif %}</title>
+		<link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+		<link type="text/css" rel="stylesheet" href="{{ site.url }}/assets/css/style.css"/>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0"> 
+		<script src="{{ site.url }}/assets/js/color.js"></script>
+		<script src="{{ site.url }}/assets/js/animals.js"></script>
+	</head>
+	<body>
+{% include header.html %}
+		<div class="heading" style="color:#eb4848">
+			<h1>{% if page.title %}{{ page.title }}{% else %}nesrak1 likes <span id="animal-name">animals</span>{% endif %}</h1>
+		</div>
+		<div class="content">
+			<p>{{ content }}</p>
+		</div>
+	</body>
+</html>
