@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Pokeptcha
+title: UMDCTF 2023 - Pokeptcha
 description: javascript being javascript
 ---
 
@@ -9,6 +9,8 @@ description: javascript being javascript
 > **By:** umasi
 
 ![image-20230501225012337](/uploads/2023/05/01/image-20230501225012337.png)
+
+[Also posted to irissec.xyz](https://irissec.xyz/articles/categories/2023-05-01/pokemoncaptcha)
 
 PoKePTCHA is an obfuscated JavaScript challenge with a picture of the "jigglypuff seen from above" scene, three buttons, and an "other" textbox to submit with.
 
