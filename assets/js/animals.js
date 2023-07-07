@@ -290,7 +290,7 @@ let animalChoice = Math.floor(Math.random() * animalsSplit.length);
 
 document.addEventListener("DOMContentLoaded", function() {
 	let animalName = document.getElementById("animal-name");
-	if (animalName !== undefined) {
+	if (animalName !== null) {
 		animalName.innerHTML = animalsSplit[animalChoice].toLowerCase();
 	}
 });

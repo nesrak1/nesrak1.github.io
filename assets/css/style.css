@@ -13,7 +13,7 @@ body {
 	margin: 0 auto;
 }
 
-a {
+a, button {
 	color: var(--textColor);
 	background-image: linear-gradient(90deg,
 		var(--bgColor) 0%,
@@ -25,7 +25,13 @@ a {
 	transition-delay: 0.0s, 0.15s;
 }
 
-a:hover {
+button {
+	border-color: var(--borderColor);
+	border-width: 3px;
+	border-style: solid;
+}
+
+a:hover, button:hover {
 	color: var(--bgColor);
 	cursor: pointer;
 	background-position: -100% 100%;
@@ -105,6 +111,49 @@ p > code {
 .list > ul {
 	display: inline-block; 
 	text-align: left; 
+}
+
+.code-block {
+  position: relative;
+  overflow: hidden;
+  max-height: 300px;
+}
+
+.code-block.expanded {
+  max-height: none;
+}
+
+.code-block pre {
+  overflow: hidden;
+  margin: 0;
+  padding: 10px;
+  overflow: none;
+}
+
+.code-block.expanded pre {
+  overflow: auto;
+}
+
+.code-block .expand-button {
+  display: none;
+  position: absolute;
+  bottom: 0;
+  right: 0;
+}
+
+.code-block:before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 30px;
+  background-image: linear-gradient(rgba(0, 0, 0, 0), rgba(0, 0, 0, 255));
+  pointer-events: none;
+}
+
+.code-block.expanded:before {
+  display: none;
 }
 
 .highlight .hll { background-color: #49483e }
