@@ -19,7 +19,7 @@ pwnykey is a simple flag checker - er... CD key checker. Type in key, check if i
 
 The DeviceScript CLI has its own disassembler (`npx devicescript disasm`), so let's take a look at it disassembled.
 
-{% codeblock %}
+```
 // img size 12416
 // 14 globals
 
@@ -48,7 +48,7 @@ proc main_F0(): @1120
 ???oops: Op-decode: can't find jump target 57; 0c
   54:     RETURN undefined
 ...
-{% endcodeblock %}
+```
 
 Uh oh, disassembly errors. DeviceScript's disassembler isn't very clear about what's the problem, but after looking at the bytes by hand I realized that the `can't find jump target` lines are jump instructions that just aren't being printed because they point towards the middle of a different instruction (according to the disassembler).
 
@@ -56,18 +56,18 @@ Uh oh, disassembly errors. DeviceScript's disassembler isn't very clear about wh
 
 These `0D F9 00 07`s are the culprit. It means "jump forward 7 bytes from the start of the instruction", so the three bytes that follow a jump are always skipped over. Of course, the solution is to just NOP them out! I'm not sure how I thought `00` would work since the [bytecode file lists this as invalid](https://github.com/microsoft/devicescript/blob/main/runtime/devicescript/devs_bytecode.h), but it seems to count as a single byte instruction we can use to patch up the holes.
 
-{% codeblock python %}
+```python
 import re
 d = open("keychecker.devs","rb").read()
 d = re.sub(b'\x0D\xF9\x00\x07...', b'\x0D\xF9\x00\x07\x00\x00\x00', d)
 f = open("keychecker_patch.devs","wb")
 f.write(d)
 f.close()
-{% endcodeblock %}
+```
 
 Disassembling, we get the fixed program:
 
-{% codeblock %}
+```
 // img size 12416
 // 14 globals
 
@@ -104,13 +104,13 @@ proc main_F0(): @1120
   66:     DEBUGGER
   67:     DEBUGGER
 ...
-{% endcodeblock %}
+```
 
 I modified the script to replace the useless `JMP` instructions with `DEBUGGER` as well, then deleted any lines from the disassembly that contained `DEBUGGER` in them. A little risky since really `JMP` instructions might get replaced, but after a quick look over, nothing seemed broken.
 
 ## Reading the code
 
-{% codeblock typescript %}
+```typescript
 proc main_F0(): @1120
   locals: loc0,loc1,loc2
    0:     CALL prototype_F1()
@@ -148,11 +148,11 @@ proc main_F0(): @1120
  389:     {G9} := loc0[3]
  402:     {G10} := loc0[4]
 ...
-{% endcodeblock %}
+```
 
 Finally, readable code. This part is easy enough to understand. Split the string at `-` into five chunks, map each digit/letter to a number 0-31, then chuck the five groups of five numbers into `G6`-`G10`. I added a comment with the contents of `inline_F9` so you can see how they map.
 
-{% codeblock typescript %}
+```typescript
  415:     CALL ds."format"("{0}", {G6})
  429:     loc0 := ret_val()
  439:     ALLOC_ARRAY initial_size=5
@@ -168,11 +168,11 @@ Finally, readable code. This part is easy enough to understand. Split the string
  560:     THROW ret_val()
  569:     CALL ds."format"("passed check1")
  581:     CALL ds."print"(62, ret_val())
-{% endcodeblock %}
+```
 
 The first check is easy. `G6`, the first five characters in number form are compared with another list of numbers. `[30,10,21,29,10]` maps to `YANXA`, so that's the first five down.
 
-{% codeblock typescript %}
+```typescript
  593:     CALL concat_F10({G7}, {G8})
  607:     {G11} := ret_val()
  617:     CALL {G11}."reduce"(inline_F11, 0) // (a,b) => a+b
@@ -185,11 +185,11 @@ The first check is easy. `G6`, the first five characters in number form are comp
  713:     THROW ret_val()
  722:     CALL ds."format"("passed check2")
  734:     CALL ds."print"(62, ret_val())
-{% endcodeblock %}
+```
 
 The next check is pretty easy too. The second and third group of numbers are concat'd into `G11`. To pass, their sum has to be 134 and product has to be 12534912000. A simple Z3 script can find a solution:
 
-{% codeblock python %}
+```python
 from z3 import *
 
 chars = '0123456789ABCDFGHJKLMNPQRSTUWXYZ'
@@ -208,13 +208,13 @@ if res == sat:
     model = s.model()
     values = ''.join([chars[model[element].as_long()] for element in nums])
     print(values)
-{% endcodeblock %}
+```
 
 This prints out `5DZU5H3M86` for me now, although there are other solutions I found earlier.
 
 Pretty easy so far, let's see what's last.
 
-{% codeblock typescript %}
+```typescript
  746:     CALL concat_F10({G9}, {G10})
  760:     {G12} := ret_val()
  770:     {G13} := 1337
@@ -247,11 +247,11 @@ Pretty easy so far, let's see what's last.
 1099:     CALL ds."format"("success!")
 1111:     CALL ds."print"(62, ret_val())
 1123:     RETURN 0
-{% endcodeblock %}
+```
 
 And nextInt looks like this:
 
-{% codeblock typescript %}
+```typescript
 proc nextInt_F13(): @5184
   locals: loc0
    0:     CALL {G12}."pop"()
@@ -262,11 +262,11 @@ proc nextInt_F13(): @5184
   86:     {G13} := (({G13} + 13371337) & 4294967295)
  106:     CALL {G12}."unshift"(loc0)
  120:     RETURN (loc0 + {G13})
-{% endcodeblock %}
+```
 
 In JavaScript, that would look like this (`theArray` is the concatenation of the last two group of five numbers, `G9` and `G10`):
 
-{% codeblock javascript %}
+```javascript
 var G12, G13;
 function decodeThird(theArray) {
     G12 = theArray;
@@ -288,11 +288,11 @@ function nextInt() {
     G12.unshift(loc0);
     return loc0 + G13;
 }
-{% endcodeblock %}
+```
 
 Oof, I hope `nextInt` will be reversible. Brute forcing 10 five-bit numbers might be tough. I let Copilot generate most of the code to solve this one:
 
-{% codeblock python %}
+```python
 from z3 import *
 
 def nextInt(G12, G13):
@@ -342,7 +342,7 @@ if res == sat:
     print(values)
 else:
     print("No solution found.")
-{% endcodeblock %}
+```
 
 Z3 either quits after a few minutes with `unknown`, or goes on forever using all of my disk space in the pagefile. Guess it couldn't be that easy, so I had to come up with a better way to reverse this.
 
@@ -365,10 +365,10 @@ Imagine our last 11 characters of input were `01234-56789`. `G12` or `theArray` 
 
 The counter can be pretty much ignored since it can be precalculated based on round count (421, 422, 423) and doesn't involve the state array. I tried giving Z3 the precalculated values, but it didn't speed anything up.
 
-{% codeblock python %}
+```python
 def g13_offset(val, off):
     return (val - (1337+13371337*off)) & 0xffffffff
-{% endcodeblock %}
+```
 
 So it can't figure out 420 states, but can Z3 figure a smaller amount like 20? I ran the original code with `[0,1,2,3...]` and 20 + 3 rounds. Sure enough, after a few minutes Z3 can reverse it... but it gave me back a different (yet still valid) result. That's not good, the solution isn't unique (which isn't that surprising, but still annoying.) I also removed the 0-31 restriction and upped the rounds to a few hundred and got a solution. Oh no. We have to somehow find a solution that not only results in the last three xorwow results being specific ones, but we also have to make sure the input is only 0-31. How is this even possible?
 
@@ -376,25 +376,25 @@ So it can't figure out 420 states, but can Z3 figure a smaller amount like 20? I
 
 Assuming Z3 could find the a valid state using the last three return values, I tried to see if I could reverse a state of 10 numbers to the previous state (in other words, work backwards 10 loops of calling `nextInt`). In my own version of the original DeviceScript code (which I'll call the "simulation"), I printed out `G12` every 10 loops to see how the state changed over time and to compare with what Z3 came up with. So, I let Z3 rip and it returned some values:
 
-{% codeblock python %}
+```python
 # z3 result:  [233568067,    706642777,  254311356, 772947471, -2109889853,
 #              1561025182, -2016093499, 1902351517,  91078566,  -117182616]
 # simulation: [233568067,    706642777,  254311356, 772947471,  2109889852,
 #             -1561025183,  2016093498, 1902351517,  91078566,   117182615]
-{% endcodeblock %}
+```
 
 Interesting! It's very close but only differs in the fact that some numbers are the bitwise negation of each other (e.g. `~2109889852 == -2109889853`). Hmm, we might be on to something here! Z3 returned a few more results after a few minutes, but all of the other answers are just negations of random numbers, so it might be possible that those are the only options.
 
 I ran my Z3 script on both the previous Z3 result and the simulation result and compared with the simulation result.
 
-{% codeblock python %}
+```python
 # z3 result on prev z3 result:  [-1690675720, -1535914621,  1432309505, 1646652143,   -73862263,
 #                                -2113058402, -1286497377,  -408567564, -801144163, -1497032086]
 # z3 result on prev simulation: [ 1690675719,  1535914620, -1432309506, 1646652139,  1076054070,
 #                                  968290849,   149561380,   408567563,  801144166,   494838229]
 # simulation:                   [ 1690675719,  1535914620,  1432309505, 1646652139,  1076054070,
 #                                  968290849,   149561380,   408567563, -801144167,   494838229]
-{% endcodeblock %}
+```
 
 Got my hopes up too fast. The Z3 script on the previous Z3 result starts to diverge _hard_. Looks like we need to have the right negations of each number to keep going down the right path.
 
@@ -424,13 +424,13 @@ Uh... you brute forced 32^10 options?
 
 Oh no. Was it just ignoring the last 5 characters and I read it wrong? That would be funny.
 
-{% codeblock typescript %}
+```typescript
  389:     {G9} := loc0[3]
  402:     {G10} := loc0[4]
  ...
  746:     CALL concat_F10({G9}, {G10})
  760:     {G12} := ret_val()
-{% endcodeblock %}
+```
 
 No, it's definitely concatenating G9 and G10. 
 
@@ -446,7 +446,7 @@ I wasn't part of the challenge update roles (hidden away in Discord's new "Chann
 
 Let's... download the new version and see how it looks.
 
-{% codeblock typescript %}
+```typescript
  746:     {G12} := {G9}
  757:     {G13} := 1337
  770:     loc2 := 0
@@ -478,11 +478,11 @@ Let's... download the new version and see how it looks.
 1082:     CALL ds."format"("success!")
 1094:     CALL ds."print"(62, ret_val())
 1106:     RETURN 0
-{% endcodeblock %}
+```
 
 Great, it's just five characters. Like everyone else said, it can just be brute forced.
 
-{% codeblock rust %}
+```rust
 fn do_thing(g12: &mut [i32], x: usize) -> i32 {
   let j = (420 - x) % 5;
   let i = ((420 - x) + 4) % 5;
@@ -529,13 +529,13 @@ fn main() {
     }
   }
 }
-{% endcodeblock %}
+```
 
 After a little time, we get this:
 
-{% codeblock %}
+```
 done! FBP2U
-{% endcodeblock %}
+```
 
 Putting that into the key, we get `YANXA-5DZU5-H3M86-FBP2U-AAAAA`, which gives us the flag `uiuctf{abbe62185750af9c2e19e2f2}`.
 
@@ -543,9 +543,9 @@ Putting that into the key, we get `YANXA-5DZU5-H3M86-FBP2U-AAAAA`, which gives u
 
 Assuming the key stayed the same after the change, we should be able to brute force the last 5 characters using `FBP2U` with the old three target numbers.
 
-{% codeblock %}
+```
 done! FBP2U0ANCZ
-{% endcodeblock %}
+```
 
 We've done it! We "cheated" a little bit, but the final answer is `YANXA-5DZU5-H3M86-FBP2U-0ANCZ`.
 
