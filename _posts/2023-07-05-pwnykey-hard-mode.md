@@ -551,4 +551,4 @@ We've done it! We "cheated" a little bit, but the final answer is `YANXA-5DZU5-H
 
 Talk about a difficulty curve from stages 1 and 2 to 3, LOL.
 
-Also, [here's the updated handout](/uploads/2023/07/06/pwnykey_new.tar.gz). I didn't post the updated one up front to not reveal there were too versions.
+Also, [here's the updated handout](/uploads/2023/07/06/pwnykey_new.tar.gz). I didn't post the updated one up front to not reveal there were two versions.
